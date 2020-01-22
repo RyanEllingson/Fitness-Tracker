@@ -18,6 +18,7 @@
   "homepage": "https://github.com/RyanEllingson/Fitness-Tracker#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongojs": "^3.1.0",
     "mongoose": "^5.8.9",
     "morgan": "^1.9.1"
   }
