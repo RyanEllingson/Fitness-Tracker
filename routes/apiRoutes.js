@@ -4,21 +4,25 @@ const mongojs = require("mongojs");
 
 
 module.exports = function(app) {
+    // get all the workouts from the database
     app.get("/api/workouts", function(req, res) {
-        db.Workout.findAll({}).then(function(dbWorkouts) {
+        db.Workout.find({}).then(function(dbWorkouts) {
             res.json(dbWorkouts);
         });
     });
 
+    // add an exercise to an existing workout
     app.put("/api/workouts/:id", function(req, res) {
         db.Workout.find({ _id: mongojs.ObjectId(req.params.id) }, (error, found) => {
             if (error) {
                 console.log(error);
             } else {
-                const newExercise = JSON.parse(req.body);
-                const exerciseList = found.exercises;
+                console.log(found);
+                const newExercise = req.body;
+                console.log(newExercise);
+                const exerciseList = found[0].exercises;
                 exerciseList.push(newExercise);
-                db.Workout.update(
+                db.Workout.updateOne(
                     {
                         _id: mongojs.ObjectId(req.params.id)
                     },
@@ -39,12 +43,21 @@ module.exports = function(app) {
         });
     });
 
+    // create a new workout
     app.post("/api/workouts/", function(req, res) {
-        const newWorkout = {
-            exercises: req.body.exercises
-        }
-        db.Workout.create(req.body).then(function(dbWorkout) {
-            res.json(dbWorkout);
+        db.Workout.create({})
+        .then(data => {
+            res.json(data);
+        });
+    });
+
+    // only return the last 7 workouts
+    app.get("/api/workouts/range", function(req, res) {
+        db.Workout.find({}).then(function(dbWorkouts) {
+            while(dbWorkouts.length > 7) {
+                let first = dbWorkouts.shift()
+            }
+            res.json(dbWorkouts);
         });
     });
 }
